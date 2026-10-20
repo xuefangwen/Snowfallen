@@ -1,0 +1,6 @@
+{
+  "SNOWFALLENMOD-EXTENDING_MOUNTAIN.title": "延山",
+  "SNOWFALLENMOD-EXTENDING_MOUNTAIN.description": "这张牌额外造成{Amount}点伤害，且攻击所有敌人。",
+  "SNOWFALLENMOD-ANNOTATION_MARK.title": "批注",
+  "SNOWFALLENMOD-ANNOTATION_MARK.description": "这张牌进入弃牌堆后，会在你的下一个回合开始时回到手牌。"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "Snowfallen",
+  "name": "Snowfallen",
+  "author": "Snowfallen",
+  "description": "添加可玩角色雪放及配套卡牌、遗物、药水和机制。建议新开局使用。",
+  "version": "0.2.5",
+  "has_pck": true,
+  "has_dll": true,
+  "dependencies": [
+    {
+      "id": "BaseLib",
+      "min_version": "3.3.0"
+    }
+  ],
+  "affects_gameplay": true
+}

@@ -1,0 +1,16 @@
+{
+  "SNOWFALLENMOD-SNOWFALLEN.title": "雪放",
+  "SNOWFALLENMOD-SNOWFALLEN.titleObject": "雪放",
+  "SNOWFALLENMOD-SNOWFALLEN.description": "云脉旅人\n善用水法与剑术的战士，精通药理的医者，为寻求根治荒疫的方法登塔。",
+  "SNOWFALLENMOD-SNOWFALLEN.pronounObject": "她",
+  "SNOWFALLENMOD-SNOWFALLEN.possessiveAdjective": "她的",
+  "SNOWFALLENMOD-SNOWFALLEN.pronounPossessive": "她的",
+  "SNOWFALLENMOD-SNOWFALLEN.pronounSubject": "她",
+  "SNOWFALLENMOD-SNOWFALLEN.cardsModifierTitle": "雪放卡牌",
+  "SNOWFALLENMOD-SNOWFALLEN.cardsModifierDescription": "雪放的卡牌将出现在商店与奖励中",
+  "SNOWFALLENMOD-SNOWFALLEN.aromaPrinciple": "[sine][light_blue]雪放[/light_blue][/sine]",
+  "SNOWFALLENMOD-SNOWFALLEN.eventDeathPrevention": "还不能倒下……",
+  "SNOWFALLENMOD-SNOWFALLEN.banter.alive.endTurnPing": "慢慢来，总有机会……",
+  "SNOWFALLENMOD-SNOWFALLEN.banter.dead.endTurnPing": "……",
+  "SNOWFALLENMOD-SNOWFALLEN.goldMonologue": "[sine]金闪闪的哈基米...[/sine]..."
+}

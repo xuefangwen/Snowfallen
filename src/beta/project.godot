@@ -1,0 +1,7 @@
+; Source-only C# build project. Art, scenes and playable exports are not included.
+config_version=5
+[application]
+config/name="Snowfallen"
+config/features=PackedStringArray("4.5", "C#")
+[dotnet]
+project/assembly_name="Snowfallen"
