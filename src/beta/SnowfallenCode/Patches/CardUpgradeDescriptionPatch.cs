@@ -1,6 +1,7 @@
 using HarmonyLib;
 using MegaCrit.Sts2.Core.Localization;
 using MegaCrit.Sts2.Core.Models;
+using SnowfallenMod.DongmingCode.Cards;
 using SnowfallenMod.SnowfallenCode.Cards;
 using System.Reflection;
 
@@ -79,6 +80,10 @@ public static class CardUpgradeDescriptionPatch
             AzureRiver => "SNOWFALLENMOD-AZURE_RIVER.description.upgraded",
             Preface => "SNOWFALLENMOD-PREFACE.description.upgraded",
             AcceptMandate => "SNOWFALLENMOD-ACCEPT_MANDATE.description.upgraded",
+            LiaoYue => "SNOWFALLENMOD-LIAO_YUE.description.upgraded",
+            JinChangJie => "SNOWFALLENMOD-JIN_CHANG_JIE.description.upgraded",
+            CengNing => "SNOWFALLENMOD-CENG_NING.description.upgraded",
+            EJie => "SNOWFALLENMOD-E_JIE.description.upgraded",
             _ => string.Empty
         };
         if (string.IsNullOrEmpty(locEntryKey))

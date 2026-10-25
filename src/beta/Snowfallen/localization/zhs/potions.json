@@ -28,5 +28,11 @@
   "SNOWFALLENMOD-THUNDER_BOWL_POTION.description": "记录本回合击杀的敌人。战斗胜利后，每击杀1名敌人获得15金币。",
   "SNOWFALLENMOD-IRON_DEFENSE_POTION.title": "铁御药水",
   "SNOWFALLENMOD-IRON_DEFENSE_POTION.description": "使一名玩家获得10点格挡。本回合若敌人的攻击击穿这些格挡并损失生命，或触及凝霜，获得1层人工制品。",
-  "SNOWFALLENMOD-IRON_DEFENSE_POTION.selectionScreenPrompt": "选择一名玩家。"
+  "SNOWFALLENMOD-IRON_DEFENSE_POTION.selectionScreenPrompt": "选择一名玩家。",
+  "SNOWFALLENMOD-MOON_POTION.title": "月亮药水",
+  "SNOWFALLENMOD-MOON_POTION.description": "获得3点月华。",
+  "SNOWFALLENMOD-WHITE_FROST_POTION.title": "白霜药水",
+  "SNOWFALLENMOD-WHITE_FROST_POTION.description": "获得15点凝霜和3层凝华。",
+  "SNOWFALLENMOD-BLOODLINE_ELIXIR.title": "血脉灵药",
+  "SNOWFALLENMOD-BLOODLINE_ELIXIR.description": "获得5层虚实印，并立即触发虚实印。"
 }

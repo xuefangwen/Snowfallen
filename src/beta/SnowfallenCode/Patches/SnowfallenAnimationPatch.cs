@@ -14,9 +14,112 @@ using MegaCrit.Sts2.Core.Nodes.Screens.GameOverScreen;
 using MegaCrit.Sts2.Core.Runs;
 using SnowfallenMod.SnowfallenCode.Animation;
 using SnowfallenMod.SnowfallenCode.Cards;
+using SnowfallenMod.DongmingCode.Cards;
+using SnowfallenMod.DongmingCode.Monsters;
 using SnowfallenCharacter = SnowfallenMod.SnowfallenCode.Character.Snowfallen;
+using DongmingCharacter = SnowfallenMod.DongmingCode.Character.Dongming;
 
 namespace SnowfallenMod.SnowfallenCode.Patches;
+
+[HarmonyPatch(typeof(NCreature), nameof(NCreature.SetAnimationTrigger))]
+public static class DongmingAttackAnimationTriggerPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(NCreature __instance, string trigger)
+    {
+        if (OldDayShadowAnimationDriver.IsOldDayShadow(__instance))
+        {
+            if (string.Equals(trigger?.Trim(), "Idle", StringComparison.OrdinalIgnoreCase))
+            {
+                OldDayShadowAnimationDriver.TryPlayIdle(__instance);
+                return false;
+            }
+
+            // Old Day Shadow has no attack, cast, or hit animation. Keep its
+            // custom idle visible and suppress vanilla Necrobinder triggers.
+            // Death remains on the vanilla path temporarily until dedicated
+            // death frames are provided.
+            if (string.Equals(trigger?.Trim(), "Dead", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(trigger?.Trim(), "Death", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(trigger?.Trim(), "Die", StringComparison.OrdinalIgnoreCase))
+            {
+                return !OldDayShadowAnimationDriver.TryPlayDeath(__instance);
+            }
+
+            return false;
+        }
+
+        if (string.Equals(trigger?.Trim(), "Idle", StringComparison.OrdinalIgnoreCase))
+        {
+            // Dongming's idle is a separate Mod-owned SpriteFrames player;
+            // never mutate the placeholder Necrobinder animator/state.
+            return !DongmingAttackAnimationDriver.TryPlayIdle(__instance);
+        }
+
+        if (string.Equals(trigger?.Trim(), "Dead", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(trigger?.Trim(), "Death", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(trigger?.Trim(), "Die", StringComparison.OrdinalIgnoreCase))
+        {
+            return !DongmingAttackAnimationDriver.TryPlayDeath(__instance);
+        }
+
+        if (string.Equals(trigger?.Trim(), "Hit", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(trigger?.Trim(), "Hurt", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(trigger?.Trim(), "Damage", StringComparison.OrdinalIgnoreCase))
+        {
+            return !DongmingAttackAnimationDriver.TryPlayHit(__instance);
+        }
+
+        if (string.Equals(trigger?.Trim(), "Cast", StringComparison.OrdinalIgnoreCase) ||
+            string.Equals(trigger?.Trim(), "PowerUp", StringComparison.OrdinalIgnoreCase))
+        {
+            // Dongming uses a separate Mod-owned cast sequence. Other
+            // characters continue through the original animation path.
+            if (DongmingAttackAnimationDriver.TryPlayCast(__instance))
+            {
+                return false;
+            }
+
+            DongmingAttackAnimationDriver.StopForOtherTrigger(__instance);
+            return true;
+        }
+
+        if (!string.Equals(trigger?.Trim(), "Attack", StringComparison.OrdinalIgnoreCase))
+        {
+            DongmingAttackAnimationDriver.StopForOtherTrigger(__instance);
+            return true;
+        }
+
+        // Returning false only for Dongming Attack prevents the original
+        // Necrobinder Spine trigger. Dongming's other custom triggers are
+        // handled above; unsupported triggers remain vanilla.
+        return !DongmingAttackAnimationDriver.TryPlay(__instance);
+    }
+}
+
+[HarmonyPatch(typeof(NCreature), nameof(NCreature.GetCurrentAnimationLength))]
+public static class DongmingDeathAnimationLengthPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(NCreature __instance, ref float __result)
+    {
+        return !DongmingAttackAnimationDriver.TryGetDeathDuration(
+            __instance,
+            out __result);
+    }
+}
+
+[HarmonyPatch(typeof(NCreature), nameof(NCreature.GetCurrentAnimationTimeRemaining))]
+public static class DongmingDeathAnimationRemainingPatch
+{
+    [HarmonyPrefix]
+    public static bool Prefix(NCreature __instance, ref float __result)
+    {
+        return !DongmingAttackAnimationDriver.TryGetDeathTimeRemaining(
+            __instance,
+            out __result);
+    }
+}
 
 [HarmonyPatch(typeof(NCreature), nameof(NCreature.SetAnimationTrigger))]
 public static class SnowfallenAnimationPatch
@@ -76,6 +179,7 @@ public static class SnowfallenAnimationPatch
         }
 
         int creatureCount = 0;
+        int dongmingTriggers = 0;
         int spriteSwapCount = 0;
         foreach (Node node in EnumerateTree(root))
         {
@@ -97,9 +201,13 @@ public static class SnowfallenAnimationPatch
                     driver.SetTrigger("Dead");
                 }
 
+                // 东铭的战斗视觉由 DongmingAttackAnimationDriver 接管，不经过上面的
                 // SnowfallenVisual 驱动；结束画面这里要显式触发它的死亡序列，
                 // 否则"胜利通关（角色并没有真的死）"这类情况下没人触发它。
-
+                if (DongmingAttackAnimationDriver.TryPlayDeath(creature))
+                {
+                    dongmingTriggers++;
+                }
 
                 continue;
             }
@@ -107,11 +215,20 @@ public static class SnowfallenAnimationPatch
             if (node is not AnimatedSprite2D sprite ||
                 (sprite.Name != "SnowfallenShopVisual" &&
                  sprite.Name != "SnowfallenCampfireVisual" &&
-                 sprite.Name != "SnowfallenEventVisual"))
+                 sprite.Name != "SnowfallenEventVisual" &&
+                 sprite.Name != "DongmingShopVisual" &&
+                 sprite.Name != "DongmingCampfireVisual" &&
+                 sprite.Name != "DongmingEventVisual"))
             {
                 continue;
             }
-            SpriteFrames frames = GetCombatFrames();
+
+            bool dongming = sprite.Name == "DongmingShopVisual" ||
+                sprite.Name == "DongmingCampfireVisual" ||
+                sprite.Name == "DongmingEventVisual";
+            SpriteFrames frames = dongming
+                ? ResourceLoader.Load<SpriteFrames>(DongmingAttackAnimationDriver.DeathFramesPath)
+                : GetCombatFrames();
             if (frames is null || !frames.HasAnimation(DeadAnimation))
             {
                 continue;
@@ -135,7 +252,7 @@ public static class SnowfallenAnimationPatch
 
         MegaCrit.Sts2.Core.Logging.Log.Info(
             $"[Snowfallen.DeathDiag] PlayVisibleDeath: creatures={creatureCount} " +
-            $"spriteSwaps={spriteSwapCount}");
+            $"dongmingTriggers={dongmingTriggers} spriteSwaps={spriteSwapCount}");
     }
 
     private static IEnumerable<Node> EnumerateTree(Node root)
@@ -182,7 +299,9 @@ public static class SnowfallenAnimationReadyPatch
     [HarmonyPostfix]
     public static void Postfix(NCreature __instance)
     {
+        OldDayShadowAnimationDriver.TryPlayIdle(__instance);
         SnowfallenAnimationPatch.TryInstallDriver(__instance);
+        DongmingAttackAnimationDriver.TryPlayIdle(__instance);
     }
 }
 
@@ -192,7 +311,10 @@ public static class SnowfallenDeathAnimationPatch
     [HarmonyPostfix]
     public static void Postfix(NCreature __instance)
     {
-
+        if (OldDayShadowAnimationDriver.TryPlayDeath(__instance))
+        {
+            return;
+        }
 
         SnowfallenAnimationPatch.TryInstallDriver(__instance)?.SetTrigger("Dead");
     }
@@ -239,10 +361,13 @@ public static class SnowfallenGameOverAnimationPatch
 // The vanilla game-over screen rebuilds the character visuals for non-combat
 // rooms (rest site, event, etc.) and immediately plays the placeholder
 // Necrobinder Spine "die" animation.  Those freshly-created visuals do not
+// pass through NCreature, so the normal DongmingAnimationTrigger patch cannot
+// intercept them.  Replace the rebuilt Dongming visuals after the method has
 // finished instead.
 [HarmonyPatch(typeof(NGameOverScreen), "MoveCreaturesToDifferentLayerAndDisableUi")]
 public static class SnowfallenNonCombatGameOverAnimationPatch
 {
+    private const string DongmingDeathNodeName = "DongmingGameOverDeathVisual";
     private const string SnowfallenDeathNodeName = "SnowfallenGameOverDeathVisual";
     private static readonly System.Reflection.FieldInfo RunStateField =
         AccessTools.Field(typeof(NGameOverScreen), "_runState");
@@ -252,6 +377,8 @@ public static class SnowfallenNonCombatGameOverAnimationPatch
     [HarmonyPostfix]
     public static void Postfix(NGameOverScreen __instance)
     {
+        SpriteFrames dongmingDeathFrames = ResourceLoader.Load<SpriteFrames>(
+            DongmingAttackAnimationDriver.DeathFramesPath);
         SpriteFrames snowfallenDeathFrames = GetCombatFrames();
 
         // Merchant mode reparents the existing merchant-character nodes.  The
@@ -260,13 +387,20 @@ public static class SnowfallenNonCombatGameOverAnimationPatch
         foreach (Node node in EnumerateTree(__instance))
         {
             if (node is not AnimatedSprite2D sprite ||
-                (                 sprite.Name != "SnowfallenShopVisual" &&
+                (sprite.Name != "DongmingShopVisual" &&
+                 sprite.Name != "DongmingCampfireVisual" &&
+                 sprite.Name != "DongmingEventVisual" &&
+                 sprite.Name != "SnowfallenShopVisual" &&
                  sprite.Name != "SnowfallenCampfireVisual" &&
                  sprite.Name != "SnowfallenEventVisual"))
             {
                 continue;
             }
-            AnimateDeath(sprite, snowfallenDeathFrames);
+
+            bool dongmingSprite = sprite.Name == "DongmingShopVisual" ||
+                sprite.Name == "DongmingCampfireVisual" ||
+                sprite.Name == "DongmingEventVisual";
+            AnimateDeath(sprite, dongmingSprite ? dongmingDeathFrames : snowfallenDeathFrames);
             spriteSwaps++;
         }
 
@@ -301,17 +435,21 @@ public static class SnowfallenNonCombatGameOverAnimationPatch
             for (int index = 0; index < restCount; index++)
             {
                 Player player = runState.Players[index];
-                if (player.Character is not SnowfallenCharacter ||
+                if (player.Character is not (DongmingCharacter or SnowfallenCharacter) ||
                     index >= characters.Count)
                 {
                     continue;
                 }
 
+                bool restDongming = player.Character is DongmingCharacter;
                 NCreatureVisuals vanilla = FindVisualForCharacter(
                     restVisuals,
-                    index) ?? restVisuals[index];
+                    index,
+                    restDongming) ?? restVisuals[index];
                 vanilla.GetCurrentBody().Visible = false;
-                string nodeName = "SnowfallenCampfireVisual";
+                string nodeName = restDongming
+                    ? "DongmingCampfireVisual"
+                    : "SnowfallenCampfireVisual";
                 if (characters[index].FindChild(nodeName, recursive: true, owned: false)
                     is not AnimatedSprite2D custom)
                 {
@@ -320,7 +458,9 @@ public static class SnowfallenNonCombatGameOverAnimationPatch
 
                 custom.Reparent(container, keepGlobalTransform: true);
                 custom.GlobalPosition = vanilla.GlobalPosition;
-                AnimateDeath(custom, snowfallenDeathFrames);
+                AnimateDeath(custom, restDongming
+                    ? dongmingDeathFrames
+                    : snowfallenDeathFrames);
             }
             MegaCrit.Sts2.Core.Logging.Log.Info(
                 $"[Snowfallen.DeathDiag] GameOverScreen branch=restSite " +
@@ -342,23 +482,27 @@ public static class SnowfallenNonCombatGameOverAnimationPatch
         for (int index = 0; index < count; index++)
         {
             Player player = runState.Players[index];
-            if (player.Character is not SnowfallenCharacter)
+            bool dongming = player.Character is DongmingCharacter;
+            if (!dongming && player.Character is not SnowfallenCharacter)
             {
                 continue;
             }
 
-            NCreatureVisuals visual = FindVisualForCharacter(visuals, index);
+            NCreatureVisuals visual = FindVisualForCharacter(visuals, index, dongming);
             if (visual is null)
             {
                 continue;
             }
 
             // 通关时原版走的是战斗分支：它把战斗里的视觉节点搬到结算容器（遮罩之上），
+            // 而东铭的动画驱动是视觉节点的兄弟、留在遮罩之下；驱动早先把这份视觉
             // 设成了 Visible=false，于是"可见的那份是空的、有动画的那份看不见"。
             // 这里把视觉本体重新显示，并只隐藏原版身体，让挂在它下面的死亡精灵可见。
             visual.Visible = true;
             visual.GetCurrentBody().Visible = false;
-            string deathNodeName = SnowfallenDeathNodeName;
+            string deathNodeName = dongming
+                ? DongmingDeathNodeName
+                : SnowfallenDeathNodeName;
             AnimatedSprite2D death = visual.GetNodeOrNull<AnimatedSprite2D>(
                 deathNodeName);
             if (death is null)
@@ -379,7 +523,7 @@ public static class SnowfallenNonCombatGameOverAnimationPatch
                 : 1f;
             death.Scale = new Vector2(0.32f * scaleY, 0.32f * scaleY);
             death.FlipH = visual.Scale.X < 0f;
-            AnimateDeath(death, snowfallenDeathFrames);
+            AnimateDeath(death, dongming ? dongmingDeathFrames : snowfallenDeathFrames);
             installed++;
             MegaCrit.Sts2.Core.Logging.Log.Info(
                 $"[Snowfallen.DeathDiag] installed on visual={DescribeVisualTag(visual)} " +
@@ -414,9 +558,12 @@ public static class SnowfallenNonCombatGameOverAnimationPatch
 
     private static NCreatureVisuals FindVisualForCharacter(
         List<NCreatureVisuals> visuals,
-        int index)
+        int index,
+        bool dongming)
     {
-        string wanted = SnowfallenVisualTag.Snowfallen;
+        string wanted = dongming
+            ? SnowfallenVisualTag.Dongming
+            : SnowfallenVisualTag.Snowfallen;
         NCreatureVisuals tagged = visuals.FirstOrDefault(visual =>
             visual.HasMeta(SnowfallenVisualTag.Key) &&
             visual.GetMeta(SnowfallenVisualTag.Key).AsString() == wanted);
@@ -496,7 +643,7 @@ public static class SnowfallenSkillAnimationPatch
     [HarmonyPrefix]
     public static void Prefix(CardPlay cardPlay)
     {
-        if (cardPlay.Card is not SnowfallenCard ||
+        if (cardPlay.Card is not (SnowfallenCard or DongmingCard) ||
             cardPlay.Card.Type is not (CardType.Skill or CardType.Power) ||
             !cardPlay.IsFirstInSeries)
         {
@@ -514,6 +661,8 @@ public static class SnowfallenRestSiteAnimationPatch
 {
     private const string CampfireFramesPath =
         "res://Snowfallen/Animations/snowfallen_campfire_frames.tres";
+    private const string DongmingCampfireFramesPath =
+        "res://Snowfallen/Animations/dongming_campfire_frames.tres";
     private static readonly StringName CampfireAnimation = "Campfire";
     private static readonly System.Reflection.MethodInfo GetChildSpineNodesMethod =
         AccessTools.Method(typeof(NRestSiteCharacter), "GetChildSpineNodes");
@@ -522,9 +671,10 @@ public static class SnowfallenRestSiteAnimationPatch
     public static void Postfix(NRestSiteCharacter __instance)
     {
         bool snowfallen = __instance.Player?.Character is SnowfallenCharacter;
-        if (!snowfallen ||
+        bool dongming = __instance.Player?.Character is DongmingCharacter;
+        if ((!snowfallen && !dongming) ||
             __instance.FindChild(
-                "SnowfallenCampfireVisual",
+                dongming ? "DongmingCampfireVisual" : "SnowfallenCampfireVisual",
                 recursive: true,
                 owned: false) is not null)
         {
@@ -537,7 +687,7 @@ public static class SnowfallenRestSiteAnimationPatch
         Vector2 anchorPosition = anchor?.Position ?? Vector2.Zero;
         int anchorZIndex = anchor?.ZIndex ?? 0;
 
-        string framesPath = CampfireFramesPath;
+        string framesPath = dongming ? DongmingCampfireFramesPath : CampfireFramesPath;
         SpriteFrames frames = ResourceLoader.Load<SpriteFrames>(framesPath);
         if (frames is null || !frames.HasAnimation(CampfireAnimation))
         {
@@ -561,7 +711,7 @@ public static class SnowfallenRestSiteAnimationPatch
 
         AnimatedSprite2D sprite = new()
         {
-            Name = "SnowfallenCampfireVisual",
+            Name = dongming ? "DongmingCampfireVisual" : "SnowfallenCampfireVisual",
             SpriteFrames = frames,
             Animation = CampfireAnimation,
             Position = anchorPosition + new Vector2(0f, -125f),
@@ -614,16 +764,21 @@ public static class SnowfallenMerchantAnimationPatch
         {
             if (players[index].Character is SnowfallenCharacter)
             {
-                InstallShopVisual(visuals[index]);
+                InstallShopVisual(visuals[index], dongming: false);
             }
-            
+            else if (players[index].Character is DongmingCharacter)
+            {
+                InstallShopVisual(visuals[index], dongming: true);
+            }
         }
     }
 
-    private static void InstallShopVisual(NMerchantCharacter character)
+    private static void InstallShopVisual(NMerchantCharacter character, bool dongming)
     {
-        string visualName = "SnowfallenShopVisual";
-        string framesPath = ShopFramesPath;
+        string visualName = dongming ? "DongmingShopVisual" : "SnowfallenShopVisual";
+        string framesPath = dongming
+            ? "res://Snowfallen/Animations/dongming_shop_frames.tres"
+            : ShopFramesPath;
         if (character.GetNodeOrNull<AnimatedSprite2D>(visualName) is not null)
         {
             return;
@@ -650,13 +805,13 @@ public static class SnowfallenMerchantAnimationPatch
             // Keep the source frame's foot anchor on the merchant-room floor
             // while scaling the character up to the room's full-height staging.
             Position = new Vector2(0f, -242f),
-            Scale = new Vector2(0.62f, 0.62f),
+            Scale = dongming ? new Vector2(0.76f, 0.76f) : new Vector2(0.62f, 0.62f),
             Centered = true
         };
         character.AddChild(sprite);
         sprite.Play(ShopAnimation);
         MegaCrit.Sts2.Core.Logging.Log.Info(
-            $"[Snowfallen.Animation] Installed looping Snowfallen Shop animation in merchant scene.");
+            $"[Snowfallen.Animation] Installed looping {(dongming ? "Dongming" : "Snowfallen")} Shop animation in merchant scene.");
     }
 
     private static void HideCanvasBranch(Node node)
@@ -683,6 +838,7 @@ public static class SnowfallenMerchantAnimationPatch
 internal static class SnowfallenVisualTag
 {
     internal static readonly StringName Key = "snowfallen_visual_character";
+    internal const string Dongming = "dongming";
     internal const string Snowfallen = "snowfallen";
 }
 
@@ -697,7 +853,11 @@ public static class SnowfallenCharacterVisualsTagPatch
             return;
         }
 
-        if (__instance is SnowfallenCharacter)
+        if (__instance is DongmingCharacter)
+        {
+            __result.SetMeta(SnowfallenVisualTag.Key, SnowfallenVisualTag.Dongming);
+        }
+        else if (__instance is SnowfallenCharacter)
         {
             __result.SetMeta(SnowfallenVisualTag.Key, SnowfallenVisualTag.Snowfallen);
         }
@@ -711,13 +871,17 @@ public static class SnowfallenCharacterVisualsTagPatch
 [HarmonyPatch(typeof(NFakeMerchant), "AfterRoomIsLoaded")]
 public static class SnowfallenFakeMerchantAnimationPatch
 {
+    private const string DongmingFramesPath =
+        "res://Snowfallen/Animations/dongming_shop_frames.tres";
     private const string SnowfallenFramesPath =
         "res://Snowfallen/Animations/snowfallen_shop_frames.tres";
+    private const string DongmingVisualName = "DongmingEventVisual";
     private const string SnowfallenVisualName = "SnowfallenEventVisual";
     private static readonly StringName ShopAnimation = "Shop";
     // 与火堆/战斗补丁同一口径：精灵挂在角色视觉所在容器下，偏移 (0,-125)、基准缩放 0.32。
     private static readonly Vector2 VisualOffset = new(0f, -125f);
     private const float VisualScaleBase = 0.32f;
+    private static SpriteFrames _cachedDongmingFrames;
     private static SpriteFrames _cachedSnowfallenFrames;
 
     [HarmonyPostfix]
@@ -734,31 +898,34 @@ public static class SnowfallenFakeMerchantAnimationPatch
         foreach (Node child in container.GetChildren())
         {
             if (child is not NCreatureVisuals visuals ||
-                !visuals.HasMeta(SnowfallenVisualTag.Key) ||
-                visuals.GetMeta(SnowfallenVisualTag.Key).AsString() != SnowfallenVisualTag.Snowfallen)
+                !visuals.HasMeta(SnowfallenVisualTag.Key))
             {
                 continue;
             }
-            InstallEventVisual(container, visuals);
+
+            bool dongming = visuals.GetMeta(SnowfallenVisualTag.Key).AsString() ==
+                SnowfallenVisualTag.Dongming;
+            InstallEventVisual(container, visuals, dongming);
         }
     }
 
     private static void InstallEventVisual(
         Control container,
-        NCreatureVisuals visuals)
+        NCreatureVisuals visuals,
+        bool dongming)
     {
-        string visualName = SnowfallenVisualName;
+        string visualName = dongming ? DongmingVisualName : SnowfallenVisualName;
         if (container.GetNodeOrNull<AnimatedSprite2D>(visualName) is not null)
         {
             return;
         }
 
-        SpriteFrames frames = GetFrames();
+        SpriteFrames frames = GetFrames(dongming);
         if (frames is null || !frames.HasAnimation(ShopAnimation))
         {
             MegaCrit.Sts2.Core.Logging.Log.Error(
                 "[Snowfallen.Animation] Missing event SpriteFrames for " +
-                "Snowfallen");
+                (dongming ? "Dongming" : "Snowfallen"));
             return;
         }
 
@@ -786,12 +953,18 @@ public static class SnowfallenFakeMerchantAnimationPatch
         sprite.Play(ShopAnimation);
         MegaCrit.Sts2.Core.Logging.Log.Info(
             $"[Snowfallen.Animation] Installed event visual for " +
-            $"Snowfallen in fake-merchant event.");
+            $"{(dongming ? "Dongming" : "Snowfallen")} in fake-merchant event.");
     }
 
-    private static SpriteFrames GetFrames()
+    private static SpriteFrames GetFrames(bool dongming)
     {
-return _cachedSnowfallenFrames ??=
+        if (dongming)
+        {
+            return _cachedDongmingFrames ??=
+                ResourceLoader.Load<SpriteFrames>(DongmingFramesPath);
+        }
+
+        return _cachedSnowfallenFrames ??=
             ResourceLoader.Load<SpriteFrames>(SnowfallenFramesPath);
     }
 }

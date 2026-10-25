@@ -7,6 +7,7 @@ using MegaCrit.Sts2.Core.Rooms;
 using MegaCrit.Sts2.Core.Saves.Runs;
 using SnowfallenMod.SnowfallenCode.Powers;
 using SnowfallenMod.SnowfallenCode.Rewards;
+using DongmingCharacter = SnowfallenMod.DongmingCode.Character.Dongming;
 using SnowfallenCharacter = SnowfallenMod.SnowfallenCode.Character.Snowfallen;
 
 namespace SnowfallenMod.SnowfallenCode.Patches;
@@ -36,7 +37,7 @@ internal static class FrostVictoryRewardState
                 continue;
             }
 
-            if (player.Character is SnowfallenCharacter &&
+            if (player.Character is SnowfallenCharacter or DongmingCharacter &&
                 !PendingRewards.ContainsKey(player))
             {
                 FrostPower frost = player.Creature.Powers

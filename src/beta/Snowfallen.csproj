@@ -1,26 +1,45 @@
 <Project Sdk="Godot.NET.Sdk/4.5.0">
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">net9.0</TargetFramework>
     <RootNamespace>SnowfallenMod</RootNamespace>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <ImplicitUsings>enable</ImplicitUsings>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="SnowfallenCode/**/*.cs" />
-    <Compile Include="Snowfallen/MainFile.cs" />
-    <AdditionalFiles Include="Snowfallen/localization/**/*.json" />
-    <Reference Include="0Harmony"><HintPath>$(GameDataDir)/0Harmony.dll</HintPath></Reference>
-    <Reference Include="GodotSharp"><HintPath>$(GameDataDir)/GodotSharp.dll</HintPath></Reference>
-    <Reference Include="sts2"><HintPath>$(GameDataDir)/sts2.dll</HintPath></Reference>
-    <Reference Include="BaseLib"><HintPath>$(BaseLibDll)</HintPath></Reference>
-    <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="0.1.6" />
+    <Reference Include="0Harmony">
+      <HintPath>$(GameDataDir)/0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="BaseLib">
+      <HintPath>$(BaseLibDir)/BaseLib.dll</HintPath>
+    </Reference>
+    <Reference Include="GodotSharp">
+      <HintPath>$(GameDataDir)/GodotSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="sts2">
+      <HintPath>$(GameDataDir)/sts2.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <Target Name="CheckLocalDependencies" BeforeTargets="ResolveAssemblyReferences">
-    <Error Condition="'$(GameDataDir)' == ''" Text="Set GameDataDir to the matching game's data_sts2_windows_x86_64 directory." />
-    <Error Condition="!Exists('$(GameDataDir)/sts2.dll')" Text="sts2.dll missing; check GameDataDir and game version." />
-    <Error Condition="!Exists('$(GameDataDir)/GodotSharp.dll')" Text="GodotSharp.dll missing in GameDataDir." />
-    <Error Condition="!Exists('$(GameDataDir)/0Harmony.dll')" Text="0Harmony.dll missing in GameDataDir." />
-    <Error Condition="'$(BaseLibDll)' == '' Or !Exists('$(BaseLibDll)')" Text="Set BaseLibDll to the matching BaseLib.dll file." />
-  </Target>
+  <ItemGroup>
+    <Folder Include="Snowfallen\Images\Cards\" />
+    <Folder Include="Snowfallen\Images\Charui\" />
+    <Folder Include="Snowfallen\Images\Powers\" />
+    <Folder Include="Snowfallen\Images\Potions\" />
+    <Folder Include="Snowfallen\Images\Relics\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="tools\**\*.cs" />
+    <Compile Remove="work\**\*.cs" />
+    <Compile Remove="backups\**\*.cs" />
+    <Compile Remove="backup\**\*.cs" />
+    <Compile Remove="handoff\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Alchyr.Sts2.ModAnalyzers" Version="0.1.6" />
+    <AdditionalFiles Include="Snowfallen\localization/**/*.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DongmingCode/**/*.cs;SnowfallenCode/**/*.cs;Snowfallen/MainFile.cs" />
+  </ItemGroup>
 </Project>

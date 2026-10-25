@@ -53,6 +53,7 @@ internal static class SnowfallenEnergyCounterReadyPatch
 
 // 雪放能量点：只保留静态图层，取消 layer2 / layer3 的旋转。
 // 原版 NEnergyCounter._Process 会按 (i + 1) 的倍率旋转 %RotationLayers 的子节点，
+// 而该方法除旋转外不做任何事，所以对雪放直接跳过；其他角色（含东铭）保持不变。
 [HarmonyPatch(typeof(NEnergyCounter), "_Process", new[] { typeof(double) })]
 internal static class SnowfallenEnergyCounterNoRotationPatch
 {

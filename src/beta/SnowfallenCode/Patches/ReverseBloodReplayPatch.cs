@@ -13,6 +13,7 @@ namespace SnowfallenMod.SnowfallenCode.Patches;
 /// 再完整结算一次（失去生命与回复都会再走一遍）。
 ///
 /// 图鉴/详情用的是 canonical（只读）实例，访问 Owner 会触发 AssertMutable，
+/// 因此先判 IsMutable 再取 Owner（与 Fasten.cs、东铭再演补丁同一写法）。
 /// </summary>
 [HarmonyPatch(typeof(CardModel), "get_BaseReplayCount")]
 public static class ReverseBloodReplayPatch

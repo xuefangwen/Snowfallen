@@ -2,7 +2,7 @@
 
 本项目代码由 AI 编写，美术由 AI 生成。代码采用 MIT；美术和第三方内容另行说明。完整安装包附 LICENSE.txt 与 ASSET_NOTICE.txt。
 
-1. 在 GitHub 仓库右侧进入 Releases，选择对应版本，在 Assets 中下载 `Snowfallen-0.2.5-beta-20261020.zip` 或 `Snowfallen-0.2.5-stable-20261020.zip`。不要下载自动生成的源码 ZIP 用于安装。
+1. 在 GitHub 仓库右侧进入 Releases，选择对应版本，在 Assets 中下载 `Snowfallen-0.2.5-beta-20261025.zip` 或 `Snowfallen-0.2.5-stable-20261025.zip`。不要下载自动生成的源码 ZIP 用于安装。
 2. 使用匹配分支的游戏和 BaseLib。清单要求 BaseLib 最低 3.3.0，Beta 游戏最低版本为 0.111.0；这些最低要求不代表兼容所有未来版本。正式版依赖须与其目标 API 匹配。
 3. 在 Steam 库中右键游戏 → 管理 → 浏览本地文件，定位游戏根目录。完全退出游戏后，将现有 Snowfallen 文件夹备份到 mods 之外。
 4. 解压 ZIP，把其中的 Snowfallen 文件夹放入游戏根目录的 mods 文件夹。正确层级是：

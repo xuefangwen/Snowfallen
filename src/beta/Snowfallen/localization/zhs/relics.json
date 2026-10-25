@@ -1,4 +1,22 @@
 {
+  "SNOWFALLENMOD-DARK_MOON_NECKLACE.title": "冻结月晶",
+  "SNOWFALLENMOD-DARK_MOON_NECKLACE.flavor": "血脉里的诅咒，化作前行的柴薪",
+  "SNOWFALLENMOD-DARK_MOON_NECKLACE.description": "战斗开始获得2点月华，每携带1张诅咒卡（或带有诅咒附魔）额外获得1点月华；战斗开始获得1层虚实印；诅咒牌会出现在你的卡牌奖励里；清除灾厄时，获得等量厄劫。",
+  "SNOWFALLENMOD-SHADOW_MOON_NECKLACE.title": "灾祸月晶",
+  "SNOWFALLENMOD-SHADOW_MOON_NECKLACE.flavor": "血脉里的诅咒，亦是前人的赐福",
+  "SNOWFALLENMOD-SHADOW_MOON_NECKLACE.description": "战斗开始获得4点月华，每携带1张诅咒卡（或带有诅咒附魔）额外获得2点月华。战斗开始获得2层虚实印；诅咒牌会出现在你的卡牌奖励里；清除灾厄时，获得等量厄劫。",
+  "SNOWFALLENMOD-HU_LAO_BAN_CHECK.title": "胡老板的支票",
+  "SNOWFALLENMOD-HU_LAO_BAN_CHECK.flavor": "签字的时候很潇洒，结账的时候更潇洒。",
+  "SNOWFALLENMOD-HU_LAO_BAN_CHECK.description": "获得此遗物后，每累计花费150金币，战斗开始时获得1点[gold]月华[/gold]。遗物计数为累计花费的金币。",
+  "SNOWFALLENMOD-BROKEN_SHAFT.title": "断裂的长柄",
+  "SNOWFALLENMOD-BROKEN_SHAFT.flavor": "一件武器的一部分……似乎在哪里见过？",
+  "SNOWFALLENMOD-BROKEN_SHAFT.description": "第2回合开始时，额外抽3张牌。",
+  "SNOWFALLENMOD-BROKEN_SPEARHEAD.title": "断裂的枪头",
+  "SNOWFALLENMOD-BROKEN_SPEARHEAD.flavor": "一件武器的一部分……似乎在哪里见过？",
+  "SNOWFALLENMOD-BROKEN_SPEARHEAD.description": "本场战斗首次造成伤害时，获得5层[gold]凝霜[/gold]。",
+  "SNOWFALLENMOD-MING_SHUANG.title": "铭霜",
+  "SNOWFALLENMOD-MING_SHUANG.flavor": "这下这把武器完整了。",
+  "SNOWFALLENMOD-MING_SHUANG.description": "回合开始时，额外抽1张牌，获得5层[gold]凝霜[/gold]和1点能量。",
   "SNOWFALLENMOD-WATER_BOTTLE_PENDANT.title": "水瓶吊坠",
   "SNOWFALLENMOD-WATER_BOTTLE_PENDANT.flavor": "瓶中水光摇曳，映出尚未散尽的余温。",
   "SNOWFALLENMOD-WATER_BOTTLE_PENDANT.description": "战斗开始时获得2层[gold]水息[/gold]。常态或高血：在下一场战斗开始时，最大生命值+1。",
@@ -69,5 +87,8 @@
   "SNOWFALLENMOD-VIRTUAL_REAL_CRYSTAL.description": "受到致命伤害时，保留1点生命，获得等同于最大生命50%的[gold]凝霜[/gold]，并对所有敌人造成等同于最大生命的伤害。触发后损毁。",
   "SNOWFALLENMOD-SPRING_HAIRPIN.title": "春日发卡",
   "SNOWFALLENMOD-SPRING_HAIRPIN.flavor": "在某个春天和希望一起悄悄出现。",
-  "SNOWFALLENMOD-SPRING_HAIRPIN.description": "下一张通过卡牌奖励加入牌组且尚无附魔的卡牌获得[gold]播种[/gold]附魔。跳过奖励或选择已有附魔的卡牌时不会消耗此遗物。"
+  "SNOWFALLENMOD-SPRING_HAIRPIN.description": "下一张通过卡牌奖励加入牌组且尚无附魔的卡牌获得[gold]播种[/gold]附魔。跳过奖励或选择已有附魔的卡牌时不会消耗此遗物。",
+  "SNOWFALLENMOD-IRON_HEART.title": "钢铁之心",
+  "SNOWFALLENMOD-IRON_HEART.flavor": "铁石心肠，也是心肠。",
+  "SNOWFALLENMOD-IRON_HEART.description": "生命值上限提高7点。每场战斗开始时获得2点[gold]力量[/gold]；获得后的下一场战斗开始时，额外获得2层[gold]虚弱[/gold]。"
 }

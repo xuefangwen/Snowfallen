@@ -2,5 +2,8 @@
   "SNOWFALLENMOD-EXTENDING_MOUNTAIN.title": "延山",
   "SNOWFALLENMOD-EXTENDING_MOUNTAIN.description": "这张牌额外造成{Amount}点伤害，且攻击所有敌人。",
   "SNOWFALLENMOD-ANNOTATION_MARK.title": "批注",
-  "SNOWFALLENMOD-ANNOTATION_MARK.description": "这张牌进入弃牌堆后，会在你的下一个回合开始时回到手牌。"
+  "SNOWFALLENMOD-ANNOTATION_MARK.description": "这张牌进入弃牌堆后，会在你的下一个回合开始时回到手牌。",
+  "SNOWFALLENMOD-DONGMING_CURSE_ENCHANTMENT.title": "诅咒",
+  "SNOWFALLENMOD-DONGMING_CURSE_ENCHANTMENT.description": "这张牌视作诅咒。打出或消耗时，获得3层灾厄与1点月华。",
+  "SNOWFALLENMOD-DONGMING_CURSE_ENCHANTMENT.extraCardText": "诅咒。打出或消耗时，获得3层灾厄与1点月华。"
 }

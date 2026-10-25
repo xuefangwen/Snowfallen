@@ -12,5 +12,19 @@
   "SNOWFALLENMOD-SNOWFALLEN.eventDeathPrevention": "还不能倒下……",
   "SNOWFALLENMOD-SNOWFALLEN.banter.alive.endTurnPing": "慢慢来，总有机会……",
   "SNOWFALLENMOD-SNOWFALLEN.banter.dead.endTurnPing": "……",
-  "SNOWFALLENMOD-SNOWFALLEN.goldMonologue": "[sine]金闪闪的哈基米...[/sine]..."
+  "SNOWFALLENMOD-SNOWFALLEN.goldMonologue": "[sine]金闪闪的哈基米...[/sine]...",
+  "SNOWFALLENMOD-DONGMING.title": "东铭",
+  "SNOWFALLENMOD-DONGMING.titleObject": "东铭",
+  "SNOWFALLENMOD-DONGMING.description": "月霜神使\n北境南下的魔法使，偶然发现荒疫与家族诅咒本源相似，为寻求解除诅咒而登塔。",
+  "SNOWFALLENMOD-DONGMING.pronounObject": "他",
+  "SNOWFALLENMOD-DONGMING.possessiveAdjective": "他的",
+  "SNOWFALLENMOD-DONGMING.pronounPossessive": "他的",
+  "SNOWFALLENMOD-DONGMING.pronounSubject": "他",
+  "SNOWFALLENMOD-DONGMING.cardsModifierTitle": "东铭卡牌",
+  "SNOWFALLENMOD-DONGMING.cardsModifierDescription": "东铭的卡牌将出现在商店与奖励中",
+  "SNOWFALLENMOD-DONGMING.aromaPrinciple": "[sine][light_purple]东铭[/light_purple][/sine]",
+  "SNOWFALLENMOD-DONGMING.eventDeathPrevention": "还不能倒下……",
+  "SNOWFALLENMOD-DONGMING.banter.alive.endTurnPing": "继续。",
+  "SNOWFALLENMOD-DONGMING.banter.dead.endTurnPing": "……",
+  "SNOWFALLENMOD-DONGMING.goldMonologue": "[sine]金币。[/sine]"
 }
